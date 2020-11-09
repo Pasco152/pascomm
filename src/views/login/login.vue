@@ -82,6 +82,7 @@ export default {
           },
         ],
         code: [
+          {required: true, message: "请输入验证码!", trigger: "change"},
           {
             required: true,
             min: 4,
