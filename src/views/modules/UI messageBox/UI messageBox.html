@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        .el-dialog_header {
+            background: linear-gradient(to right,#02c6fc,#1394fb);
+        }
+
+        .el-dialog_title {
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <el-button type="text" @click="isSHow=true">打开嵌套表单的 Dialog</el-button>
+
+        <el-dialog center width="603px" title="用户注册" :visible.sync="isSHow">
+            <el-form :model="form">
+                <el-form-item label="活动名称" :label-width="formLabelWidth">
+                    <el-input v-model="form.name" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="isSHow=false">取消</el-button>
+                <el-button type="primary" @click="isSHow=false">确定</el-button>
+            </div>
+        </el-dialog>
+    </div>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+    <script>
+        const app = new Vue({
+            el:'#app',
+            data:{
+                isSHow:false,
+                form:{
+                    name:''
+                },
+                // 左侧文本的间隙
+                formLabelWidth:'120px'
+            }
+        })
+    </script>
+</body>
+
+</html>

@@ -7,15 +7,15 @@
         <span class="titleLine">|</span>
         <span class="titleName2">用户登录</span>
       </div>
-      <el-form :model="form" class="form">
-        <el-form-item>
+      <el-form :model="form" class="form" :rules="rules" ref="ruleForm">
+        <el-form-item label="手机号" prop="phone">
           <el-input
             prefix-icon="el-icon-user"
             v-model="form.phone"
             placeholder="请输入手机号"
           ></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item label="密码" prop="password">
           <el-input
             :show-password="true"
             prefix-icon="el-icon-lock"
@@ -23,7 +23,7 @@
             placeholder="请输入密码"
           ></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="code">
           <el-row>
             <el-col :span="16">
               <el-input
@@ -37,7 +37,7 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="isCheck">
           <el-checkbox v-model="form.isCheck">
             我已阅读并同意
             <el-link type="primary">用户协议</el-link>和
@@ -45,8 +45,8 @@
           </el-checkbox>
         </el-form-item>
         <el-form-item>
-          <el-button class="btn" type="primary">登陆</el-button>
-          <br>
+          <el-button class="btn" type="primary" @click="submit">登录</el-button>
+          <br />
           <el-button class="btn" type="primary">注册</el-button>
         </el-form-item>
       </el-form>
@@ -62,21 +62,60 @@ export default {
   name: "login",
   data() {
     return {
-      input1: "",
-      input2: "",
-      input3: "",
       form: {
         phone: "",
         password: "",
         code: "",
-        isCheck: "",
+        isCheck: [],
+      },
+      rules: {
+        phone: [
+          { required: true, message: "请输入手机号!", trigger: "change" },
+        ],
+        password: [
+          { required: true, message: "请输入密码!", trigger: "change" },
+          {
+            min: 6,
+            max: 12,
+            message: "请输入6-12位密码",
+            trigger: "change",
+          },
+        ],
+        code: [
+          {
+            required: true,
+            min: 4,
+            max: 4,
+            message: "请填入4位验证码!",
+            trigger: "change",
+          },
+        ],
+        isCheck: [
+          { required: true, message: "请阅读并同意!", trigger: "change" },
+        ],
       },
     };
+  },
+  methods: {
+    submit() {
+      window.console.log(this.form);
+      this.$refs.ruleForm.validate((result) => {
+        window.console.log(result);
+      });
+    },
   },
 };
 </script>
 
 <style lang="less">
+* {
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  height: 100%;
+}
 .login {
   display: flex;
   justify-content: space-around;
