@@ -1,7 +1,7 @@
 import VueRouter from 'vue-router'
 import Vue from 'vue'
 Vue.use(VueRouter)
-import login from '@/view/login/login.vue'
+import login from '@/views/login/login.vue'
 const router = new VueRouter({
     routes: [
         // 这里编写相应路由规则

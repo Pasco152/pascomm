@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<!--el-form: 整个表单 
+    label-width: 整个表单下面所有标题的宽度
+    model: 绑定值,就是绑定整个表单的值
+    el-form-item: 表单元素的每一项
+    label属性就是该项的标题
+ -->
+<!-- 
+     rules绑定规则
+        rules:{
+            名字:[] // 后面是一个数组
+            名字来自于el-form-item里面的prop属性的值,它一定是表单元素v-model的值
+            例:el-form下的表单元素的v-model="ruleForm.name",那么它的需要验证的子项的prop一定要是name
+        }
+  -->
+<!-- 
+      验证规则参数说明
+      {requiredLtrue,message:'请输入活动名称',trigger:'blur'}
+      {min:3,max:5,message:'长度在3到5个字符',trigger:'blur'}
+      required: 必填,如果没填就是错误信息message的值
+      message: 错误提示信息
+      trigger: 在什么情况下触发这个验证,有两个值供我们选择blur失焦 change 值改变的时候触发
+      min: 最小长度
+      max: 最大长度
+   -->
+
+<body>
+    <!-- 挂载的元素 -->
+    <div id="id">
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+            <el-form-item label="用户名" prop="name">
+                <el-input v-model="ruleForm.name"></el-input>
+            </el-form-item>
+            <el-form-item label="密码" prop="password">
+                <el-input v-model="ruleForm.password"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
+                <el-button @click="submitForm('ruleForm')">重置</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+    <script>
+        const app = new Vue({
+            el: "#app",
+            data: {
+                ruleForm: {
+                    name: '',
+                    password: '',
+                },
+                rules: {
+                    name: [
+                        { required: true, message: '用户名不能为空', trigger: 'blur' },
+                        { min: 6, max: 8, message: '长度在6到8个字符', trigger: 'blur' }
+                    ],
+                    password: [
+                        { required: true, message: '用户名不能为空', trigger: 'blur' },
+                        { min: 6, max: 8, message: '长度在6到8个字符', trigger: 'blur' }
+                    ],
+                }
+            },
+            // Element - ui表单 - 验证方法及表单重置
+            methods: {
+                submitForm(formName) {
+                    // 上面传入的 formName是 ruleForm
+                    // $refs作用是 获取 页面中使用ref标记的元素
+                    // 等同于 this.$refs['ruleForm'] 相当于获取到了el-form的this
+                    // this.$refs['ruleForm'] 等同于 this.$refs.ruleForm
+                    // validate这个方法是Element-ui的表单el-form的组件方法
+                    this.$refs[formName].validate((valid) => {
+                        if (valid) {
+                            alert('对啦!');
+                            // 验证正确
+                        } else {
+                            alert("错啦")
+                            // 验证错误
+                            return false;
+                        }
+                    });
+                },
+                // 重置表单
+                resetForm(formName) {
+                    // 等同于 this.$refs['ruleForm'] 相当于获取到了el-form的this
+                    // this.$refs['ruleForm'] 等同于 this.$refs.ruleForm
+                    // resetFields 也是Element-ui表单的方法
+                    this.$refs[formName].resetFields();
+                }
+            }
+        })
+
+        /*
+            表单重置：调用el-form表单组件methods里面的一个resetFields方法
+            1：在子组件标签上定义一个ref  ref=值
+            2：通过ref拿到该子组件的this===this.$refs.ref值
+            this.$refs.ref值.resetFields()
+        */
+
+        /*
+            表单验证
+                1. 首先在el-form上加一个model绑定
+                2. 在el-form上加一个rules属性  rules值是对象类型
+                3. 在需要验证的子项上加上一个prop绑定(需要验证的字段名)
+                rules:{
+                    prop绑定的值: [
+                        {required: true(必填),message:'错误信息',trigger:'blur/change'}
+                        {min:最小长度,max:最大长度,message:'错误信息',trigger:'blur/change'}
+                    ],
+                }
+            全局验证: 调用el-form表单组件methods里面的一个validate方法
+            父传子: 1. 在子组件标签上定义一个ref   ref=值
+                    2. 通过ref拿到该子组件的this===this.$refs.ref值
+                    this.$refs.ref值.validate((result)=>{
+                        true:表示验证成功
+                        false:验证失败
+                    })
+        */
+    </script>
+</body>
+
+</html>
