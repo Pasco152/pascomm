@@ -6,10 +6,7 @@
 
 <script>
 export default {
-  created() {
-    let _url = process.env.VUE_APP_URL
-    alert(_url);
-  },
+
 }
 </script>
 

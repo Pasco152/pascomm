@@ -8,14 +8,14 @@
         <span class="titleName2">用户登录</span>
       </div>
       <el-form :model="form" class="form" :rules="rules" ref="ruleForm">
-        <el-form-item label="手机号" prop="phone">
+        <el-form-item prop="phone">
           <el-input
             prefix-icon="el-icon-user"
             v-model="form.phone"
             placeholder="请输入手机号"
           ></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop="password">
+        <el-form-item prop="password">
           <el-input
             :show-password="true"
             prefix-icon="el-icon-lock"
@@ -33,7 +33,7 @@
               ></el-input>
             </el-col>
             <el-col :span="8">
-              <img src="@/assets/img/login_code.jpg" class="key" alt />
+              <img src="http://127.0.0.1/heimamm/public/captcha?type=login" class="code" alt />
             </el-col>
           </el-row>
         </el-form-item>
@@ -61,6 +61,7 @@
 </template>
 
 <script>
+import {userLogin} from '../../api/login'
 import register from "./register.vue";
 export default {
   name: "login",
@@ -77,19 +78,20 @@ export default {
       },
       rules: {
         phone: [
-          { required: true, message: "请输入手机号!", trigger: "change" },
+          { required: true, message: "请输入手机号!", trigger: "blur" },
+          { pattern: /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/, message: "手机号格式有误!", trigger: "change" },
         ],
         password: [
-          { required: true, message: "请输入密码!", trigger: "change" },
+          { required: true, message: "请输入密码!", trigger: "blur" },
           {
             min: 6,
             max: 12,
             message: "请输入6-12位密码",
-            trigger: "change",
+            trigger: "blur",
           },
         ],
         code: [
-          { required: true, message: "请输入验证码!", trigger: "change" },
+          { required: true, message: "请输入验证码!", trigger: "blur" },
           {
             required: true,
             min: 4,
@@ -106,9 +108,21 @@ export default {
   },
   methods: {
     submit() {
-      window.console.log(this.form);
+      // window.console.log(this.form);
       this.$refs.ruleForm.validate((result) => {
-        window.console.log(result);
+        // window.console.log(result);
+        if (result) {
+          userLogin({
+            phone:this.form.phone,
+            password:this.form.password,
+            code:this.form.code,
+          }).then(res=>{
+            console.log(res);
+          })
+        } else {
+          this.$message.error('数据格式有误!')
+          return false
+        }
       });
     },
     registerClick() {
