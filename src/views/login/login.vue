@@ -47,7 +47,9 @@
         <el-form-item>
           <el-button class="btn" type="primary" @click="submit">登录</el-button>
           <br />
-          <el-button class="btn" type="primary" @click="registerClick">注册</el-button>
+          <el-button class="btn" type="primary" @click="registerClick"
+            >注册</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -59,11 +61,11 @@
 </template>
 
 <script>
-import register from "./register.vue"
+import register from "./register.vue";
 export default {
   name: "login",
   components: {
-    register
+    register,
   },
   data() {
     return {
@@ -87,7 +89,7 @@ export default {
           },
         ],
         code: [
-          {required: true, message: "请输入验证码!", trigger: "change"},
+          { required: true, message: "请输入验证码!", trigger: "change" },
           {
             required: true,
             min: 4,
@@ -120,6 +122,7 @@ export default {
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 html,
 body {
