@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    title="收货地址"
+    title="注册"
     :visible.sync="dialogFormVisible"
     class="register"
     :show-close="false"
@@ -37,6 +37,29 @@
       <el-form-item label="密码" prop="password">
         <el-input v-model="form.password" :show-password="true"></el-input>
       </el-form-item>
+      <el-form-item label="图形码" prop="code">
+        <el-row>
+          <el-col :span="16">
+            <el-input v-model="form.code"></el-input>
+          </el-col>
+          <el-col :span="7" :offset="1">
+            <img class="code_img" alt :src="codeUrl" @click="codeClick" />
+          </el-col>
+        </el-row>
+      </el-form-item>
+      <el-form-item label="验证码" prop="rcode">
+        <el-row>
+          <el-col :span="16">
+            <el-input v-model="form.rcode"></el-input>
+          </el-col>
+          <el-col :span="7" :offset="1">
+            <el-button class="full_btn" @click="getRcode" :disabled="timeout>0 && timeout<60">
+              获取验证码
+              <span v-if="timeout>0 && timeout<60">{{timeout}}</span>
+            </el-button>
+          </el-col>
+        </el-row>
+      </el-form-item>
     </el-form>
 
     <div slot="footer" class="dialog-footer">
@@ -48,6 +71,7 @@
   </el-dialog>
 </template>
 <script>
+import {userRegister} from '../../api/register'
 export default {
   data() {
     return {
@@ -61,6 +85,8 @@ export default {
         phone: "",
         password: "",
       },
+      codeUrl: "http://127.0.0.1/heimamm/public/captcha?type=sendsms&t=",
+      timeout:60,
       rules: {
         username: [
           { required: true, message: "请输入用户名", trigger: "change" },
@@ -105,6 +131,10 @@ export default {
             trigger: "change",
           },
         ],
+        code: [{ required: true, message: "请输入验证码!", trigger: "change" }],
+        rcode: [
+          { required: true, message: "请输入手机验证码!", trigger: "change" },
+        ],
       },
       baseUrl: process.env.VUE_APP_URL,
       imageUrl: "",
@@ -136,6 +166,43 @@ export default {
       // 父传子(父调用字方法)1: 在子组件标签定义ref
       // this.imageUrl = res.data.file_path
       this.$refs.form.validateField(["avatar"]);
+    },
+    codeClick() {
+      // 点击切换图形验证码   后面加上随机数防止浏览器缓存
+      this.codeUrl =
+        process.env.VUE_APP_BASEURL + "/captcha?type=sendsms&t=" + Date.now();
+    },
+    getRcode() {
+      let _num = 0;
+      this.$refs.form.validateField(["phone", "code"], (error) => {
+        window.console.log(error);
+        if (error == "") {
+          _num++;
+        }
+      });
+      if (_num == 2) {
+        // 定时器
+        this.timeout--;
+        let interTime = setInterval(()=>{
+          this.timeout--;
+          if (this.timeout==0) {
+            this.timeout = 60;
+            clearInterval(interTime);
+          }
+        },1000)
+        // this.$message.success("验证通过");
+        userRegister({
+          code:this.form.code,
+          phone:this.form.phone,
+        }).then(res=>{
+          this.$message.success(res.data.data.captcha + '')
+          window.console.log(res);
+        }).catch(error=>{
+          window.console.log(error);
+        })
+      } else {
+        this.$message.error("验证失败");
+      }
     },
   },
 };
@@ -182,6 +249,9 @@ export default {
     width: 178px;
     height: 178px;
     display: block;
+  }
+  .code_img {
+    height: 40px;
   }
 }
 </style>
