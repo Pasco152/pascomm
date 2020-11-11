@@ -118,6 +118,7 @@ export default {
             code:this.form.code,
           }).then(res=>{
             console.log(res);
+            this.$message.success("登陆成功");
           })
         } else {
           this.$message.error('数据格式有误!')

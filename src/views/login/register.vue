@@ -53,9 +53,13 @@
             <el-input v-model="form.rcode"></el-input>
           </el-col>
           <el-col :span="7" :offset="1">
-            <el-button class="full_btn" @click="getRcode" :disabled="timeout>0 && timeout<60">
+            <el-button
+              class="full_btn"
+              @click="getRcode"
+              :disabled="timeout > 0 && timeout < 60"
+            >
               获取验证码
-              <span v-if="timeout>0 && timeout<60">{{timeout}}</span>
+              <span v-if="timeout > 0 && timeout < 60">{{ timeout }}</span>
             </el-button>
           </el-col>
         </el-row>
@@ -64,17 +68,25 @@
 
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogFormVisible = false">取 消</el-button>
-      <el-button type="primary" @click="dialogFormVisible = false"
-        >确 定</el-button
-      >
+      <el-button type="primary" @click="submitClick">确 定</el-button>
     </div>
   </el-dialog>
 </template>
 <script>
-import {userRegister} from '../../api/register'
+import { userSendsms, userRegister } from "../../api/register";
 export default {
   data() {
     return {
+      watch: {
+        dialogFormVisible(newVal) {
+          if (newVal == false) {
+            // 清空表单
+            this.$refs.form.resetFields();
+            // 将图片置空
+            this.form.avatar = "";
+          }
+        },
+      },
       dialogFormVisible: false,
       // 表单数据
       form: {
@@ -86,7 +98,7 @@ export default {
         password: "",
       },
       codeUrl: "http://127.0.0.1/heimamm/public/captcha?type=sendsms&t=",
-      timeout:60,
+      timeout: 60,
       rules: {
         username: [
           { required: true, message: "请输入用户名", trigger: "change" },
@@ -136,7 +148,7 @@ export default {
           { required: true, message: "请输入手机验证码!", trigger: "change" },
         ],
       },
-      baseUrl: process.env.VUE_APP_URL,
+      baseUrl: process.env.VUE_APP_BASEURL,
       imageUrl: "",
     };
   },
@@ -183,26 +195,42 @@ export default {
       if (_num == 2) {
         // 定时器
         this.timeout--;
-        let interTime = setInterval(()=>{
+        let interTime = setInterval(() => {
           this.timeout--;
-          if (this.timeout==0) {
+          if (this.timeout == 0) {
             this.timeout = 60;
             clearInterval(interTime);
           }
-        },1000)
+        }, 1000);
         // this.$message.success("验证通过");
-        userRegister({
-          code:this.form.code,
-          phone:this.form.phone,
-        }).then(res=>{
-          this.$message.success(res.data.data.captcha + '')
-          window.console.log(res);
-        }).catch(error=>{
-          window.console.log(error);
+        userSendsms({
+          code: this.form.code,
+          phone: this.form.phone,
         })
+          .then((res) => {
+            this.$message.success(res.data.data.captcha + "");
+            window.console.log(res);
+          })
+          .catch((error) => {
+            window.console.log(error);
+          });
       } else {
         this.$message.error("验证失败");
       }
+    },
+    // 给确定按钮设置点击事件
+    submitClick() {
+      this.$refs.form.validate((result) => {
+        if (result) {
+          userRegister(this.form).then((res) => {
+            window.console.log("注册返回信息:", res);
+            if (res.code == 200) {
+              this.$message.success("注册成功");
+              this.dialogFormVisible = false;
+            }
+          });
+        }
+      });
     },
   },
 };
