@@ -33,7 +33,7 @@
               ></el-input>
             </el-col>
             <el-col :span="8">
-              <img src="http://127.0.0.1/heimamm/public/captcha?type=login" class="code" alt />
+              <img :src="codeUrl" class="code" alt @click="codeClick" />
             </el-col>
           </el-row>
         </el-form-item>
@@ -62,8 +62,8 @@
 
 <script>
 // import layout from '@/views/layout/layout.vue'
-import {saveToken,getToken} from '../../utils/token'
-import {userLogin} from '../../api/login'
+import { saveToken, getToken } from "../../utils/token";
+import { userLogin } from "../../api/login";
 import register from "./register.vue";
 export default {
   name: "login",
@@ -72,6 +72,7 @@ export default {
   },
   data() {
     return {
+      codeUrl: "http://127.0.0.1/heimamm/public/captcha?type=login",
       form: {
         phone: "",
         password: "",
@@ -81,7 +82,11 @@ export default {
       rules: {
         phone: [
           { required: true, message: "请输入手机号!", trigger: "blur" },
-          { pattern: /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/, message: "手机号格式有误!", trigger: "change" },
+          {
+            pattern: /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/,
+            message: "手机号格式有误!",
+            trigger: "change",
+          },
         ],
         password: [
           { required: true, message: "请输入密码!", trigger: "blur" },
@@ -110,9 +115,9 @@ export default {
   },
   created() {
     // 如果有token就跳转值layout,没有就算了
-    window.console.log('获取token:',getToken('token'))
-    if (getToken('token')) {
-      this.$router.push('/layout')
+    window.console.log("获取token:", getToken("token"));
+    if (getToken("token")) {
+      this.$router.push("/layout");
     }
   },
   methods: {
@@ -122,20 +127,26 @@ export default {
         // window.console.log(result);
         if (result) {
           userLogin({
-            phone:this.form.phone,
-            password:this.form.password,
-            code:this.form.code,
-          }).then(res=>{
+            phone: this.form.phone,
+            password: this.form.password,
+            code: this.form.code,
+          }).then((res) => {
             console.log(res);
-            saveToken(res.data.token)
+            saveToken(res.data.token);
             this.$message.success("登陆成功");
-            this.$router.push('/layout')
-          })
+            this.$router.push("/layout");
+          });
         } else {
-          this.$message.error('数据格式有误!')
-          return false
+          this.$message.error("数据格式有误!");
+          return false;
         }
       });
+    },
+    codeClick() {
+      // 点击切换图形验证码   后面加上随机数防止浏览器缓存
+      console.log(111);
+      this.codeUrl =
+        process.env.VUE_APP_BASEURL + "/captcha?type=login&t=" + Date.now();
     },
     registerClick() {
       this.$refs.register.dialogFormVisible = true;

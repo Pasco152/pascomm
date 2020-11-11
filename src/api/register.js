@@ -25,7 +25,7 @@ instance.interceptors.response.use(function (response) {
     if (response.data.code == 200) {
         return response.data 
     } else {
-        MessageChannel.error(response.data.message)
+        Message.error(response.data.message)
         return response.data
     }
     // return response;
