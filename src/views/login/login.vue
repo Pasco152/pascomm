@@ -61,6 +61,8 @@
 </template>
 
 <script>
+// import layout from '@/views/layout/layout.vue'
+import {saveToken,getToken} from '../../utils/token'
 import {userLogin} from '../../api/login'
 import register from "./register.vue";
 export default {
@@ -106,6 +108,13 @@ export default {
       },
     };
   },
+  created() {
+    // 如果有token就跳转值layout,没有就算了
+    window.console.log('获取token:',getToken('token'))
+    if (getToken('token')) {
+      this.$router.push('/layout')
+    }
+  },
   methods: {
     submit() {
       // window.console.log(this.form);
@@ -118,7 +127,9 @@ export default {
             code:this.form.code,
           }).then(res=>{
             console.log(res);
+            saveToken(res.data.token)
             this.$message.success("登陆成功");
+            this.$router.push('/layout')
           })
         } else {
           this.$message.error('数据格式有误!')
